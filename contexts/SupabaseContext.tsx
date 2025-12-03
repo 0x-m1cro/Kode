@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useState, ReactNode } from 'react';
+import { createContext, useContext, useState, useMemo, ReactNode } from 'react';
 
 export interface SupabaseCredentials {
   projectUrl: string;
@@ -18,9 +18,12 @@ const SupabaseContext = createContext<SupabaseContextType | undefined>(undefined
 export function SupabaseProvider({ children }: { children: ReactNode }) {
   const [credentials, setCredentials] = useState<SupabaseCredentials | null>(null);
 
-  const isConfigured = credentials !== null && 
-    credentials.projectUrl.trim() !== '' && 
-    credentials.anonKey.trim() !== '';
+  const isConfigured = useMemo(
+    () => credentials !== null && 
+      credentials.projectUrl.trim() !== '' && 
+      credentials.anonKey.trim() !== '',
+    [credentials]
+  );
 
   return (
     <SupabaseContext.Provider value={{ credentials, setCredentials, isConfigured }}>

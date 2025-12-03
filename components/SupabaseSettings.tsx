@@ -57,9 +57,33 @@ export default function SupabaseSettings({ isOpen, onClose, webContainer }: Supa
 
       // Write to .env.local in WebContainer
       if (webContainer) {
-        const envContent = `NEXT_PUBLIC_SUPABASE_URL=${newCredentials.projectUrl}
-NEXT_PUBLIC_SUPABASE_ANON_KEY=${newCredentials.anonKey}
-`;
+        let existingEnv = '';
+        try {
+          existingEnv = await webContainer.fs.readFile('/.env.local', 'utf-8');
+        } catch {
+          // File doesn't exist yet, which is fine
+        }
+
+        // Parse existing env vars and update/add Supabase ones
+        const envVars = new Map<string, string>();
+        existingEnv.split('\n').forEach((line) => {
+          const trimmed = line.trim();
+          if (trimmed && !trimmed.startsWith('#')) {
+            const [key, ...valueParts] = trimmed.split('=');
+            if (key) {
+              envVars.set(key.trim(), valueParts.join('=').trim());
+            }
+          }
+        });
+
+        // Update Supabase credentials
+        envVars.set('NEXT_PUBLIC_SUPABASE_URL', newCredentials.projectUrl);
+        envVars.set('NEXT_PUBLIC_SUPABASE_ANON_KEY', newCredentials.anonKey);
+
+        // Rebuild env file content
+        const envContent = Array.from(envVars.entries())
+          .map(([key, value]) => `${key}=${value}`)
+          .join('\n') + '\n';
         
         await webContainer.fs.writeFile('/.env.local', envContent);
         console.log('Supabase credentials written to .env.local');

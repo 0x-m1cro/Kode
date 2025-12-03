@@ -3,17 +3,26 @@
 import { useState, useEffect } from 'react';
 import type { WebContainer } from '@webcontainer/api';
 import { getWebContainer } from '@/lib/webcontainer';
+import { createMockWebContainer } from '@/lib/mock-webcontainer';
 import ChatPanel from './ChatPanel';
 
 export default function IDELayout() {
   const [webContainer, setWebContainer] = useState<WebContainer | null>(null);
   const [isBooting, setIsBooting] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isMock, setIsMock] = useState(false);
 
   useEffect(() => {
     async function initWebContainer() {
       try {
-        const container = await getWebContainer();
+        // Set a timeout for WebContainer boot
+        const timeoutPromise = new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('WebContainer boot timeout')), 30000)
+        );
+        
+        const bootPromise = getWebContainer();
+        const container = await Promise.race([bootPromise, timeoutPromise]) as WebContainer;
+        
         setWebContainer(container);
         
         // Initialize with a basic file structure
@@ -41,8 +50,36 @@ export default function IDELayout() {
         setIsBooting(false);
       } catch (err) {
         console.error('Failed to initialize WebContainer:', err);
-        setError('Failed to initialize WebContainer. Please refresh the page.');
-        setIsBooting(false);
+        
+        // Fall back to mock WebContainer for testing
+        try {
+          const mockContainer = await createMockWebContainer();
+          await mockContainer.mount({
+            'package.json': {
+              file: {
+                contents: JSON.stringify({
+                  name: 'my-project',
+                  version: '1.0.0',
+                  description: 'A project built with AI',
+                }, null, 2),
+              },
+            },
+            'README.md': {
+              file: {
+                contents: '# My AI Project\n\nThis project is being built with AI assistance!\n',
+              },
+            },
+          });
+          
+          setWebContainer(mockContainer as any);
+          setIsMock(true);
+          setError(null);
+          setIsBooting(false);
+          console.log('Using mock WebContainer for testing');
+        } catch (mockErr) {
+          setError(err instanceof Error ? err.message : 'Failed to initialize WebContainer. Please refresh the page.');
+          setIsBooting(false);
+        }
       }
     }
 
@@ -57,6 +94,11 @@ export default function IDELayout() {
           Lovable Clone - AI Development Platform
         </h1>
         <div className="ml-auto flex items-center gap-2">
+          {isMock && (
+            <div className="px-3 py-1 rounded-full text-xs bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400">
+              Mock Mode
+            </div>
+          )}
           <div className={`px-3 py-1 rounded-full text-sm ${
             webContainer ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 
             isBooting ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400' :

@@ -89,5 +89,5 @@ export default defineConfig({
   },
 
   /* Global setup */
-  globalSetup: require.resolve('./e2e/global-setup.ts'),
+  globalSetup: './e2e/global-setup.ts',
 });

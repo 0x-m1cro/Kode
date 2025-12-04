@@ -71,8 +71,6 @@ test.describe('WebContainer Initialization', () => {
     
     const bootTime = Date.now() - startTime;
     
-    console.log(`WebContainer boot time: ${bootTime}ms`);
-    
     // Verify it booted within the expected timeout
     expect(bootTime).toBeLessThan(TEST_TIMEOUTS.WEBCONTAINER_BOOT);
   });

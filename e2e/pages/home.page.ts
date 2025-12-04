@@ -72,7 +72,7 @@ export class HomePage {
   /**
    * Wait for a specific selector with custom timeout
    */
-  async waitForSelector(selector: string, timeout: number = TEST_TIMEOUTS.ELEMENT_VISIBLE): Promise<Locator> {
+  async waitForSelector(selector: string, timeout: number = TEST_TIMEOUTS.ELEMENT_VISIBLE) {
     return await this.page.waitForSelector(selector, { timeout });
   }
 }

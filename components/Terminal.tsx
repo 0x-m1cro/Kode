@@ -31,8 +31,8 @@ export default function Terminal({
     // Dynamically import xterm to avoid SSR issues
     const initTerminal = async () => {
       try {
-        const { Terminal: XTerm } = await import('xterm');
-        const { FitAddon } = await import('xterm-addon-fit');
+        const { Terminal: XTerm } = await import('@xterm/xterm');
+        const { FitAddon } = await import('@xterm/addon-fit');
 
         if (!mounted || !terminalRef.current) return;
 

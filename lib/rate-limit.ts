@@ -56,12 +56,19 @@ export function rateLimit(
   };
 }
 
-// Clean up expired entries periodically
-setInterval(() => {
-  const now = Date.now();
-  for (const [key, entry] of limits.entries()) {
-    if (entry.resetAt < now) {
-      limits.delete(key);
+// Clean up expired entries periodically (only in Node.js environment)
+if (typeof window === 'undefined') {
+  const cleanupInterval = setInterval(() => {
+    const now = Date.now();
+    for (const [key, entry] of limits.entries()) {
+      if (entry.resetAt < now) {
+        limits.delete(key);
+      }
     }
+  }, 60000); // Clean up every minute
+  
+  // Unref to allow process to exit
+  if (cleanupInterval.unref) {
+    cleanupInterval.unref();
   }
-}, 60000); // Clean up every minute
+}

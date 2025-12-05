@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import { Send, Loader2, FileEdit } from 'lucide-react';
 import { processChatMessage } from '@/app/actions/chat';
 import { useSupabase } from '@/contexts/SupabaseContext';
+import { useAIModifiedFiles } from '@/contexts/AIModifiedFilesContext';
 import type { Message } from '@/types/chat';
 import type { WebContainer } from '@webcontainer/api';
 import { serializeFileSystem, fileSystemToText, writeFilesToContainer } from '@/lib/filesystem';
@@ -19,6 +20,7 @@ export default function ChatPanel({ webContainer }: ChatPanelProps) {
   const [filesBeingUpdated, setFilesBeingUpdated] = useState<string[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { isConfigured } = useSupabase();
+  const { markFileAsModified } = useAIModifiedFiles();
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -57,6 +59,12 @@ export default function ChatPanel({ webContainer }: ChatPanelProps) {
         
         try {
           await writeFilesToContainer(webContainer, response.fileChanges);
+          
+          // Mark files as AI-modified
+          response.fileChanges.forEach((file) => {
+            markFileAsModified(file.path);
+          });
+          
           console.log(`Applied ${response.fileChanges.length} file changes`);
         } catch (error) {
           console.error('Error applying file changes:', error);

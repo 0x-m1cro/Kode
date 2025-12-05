@@ -11,10 +11,12 @@ import {
   FileJson,
   FileText,
   Image as ImageIcon,
+  Sparkles,
 } from 'lucide-react';
 import type { WebContainer } from '@webcontainer/api';
 import { serializeFileSystem } from '@/lib/filesystem';
 import type { FileNode } from '@/types/filesystem';
+import { useAIModifiedFiles } from '@/contexts/AIModifiedFilesContext';
 
 interface FileTreeProps {
   webContainer: WebContainer | null;
@@ -101,7 +103,9 @@ function TreeNodeComponent({
   onFileSelect: (path: string) => void;
   selectedFile: string | null;
 }) {
+  const { isFileModified } = useAIModifiedFiles();
   const isSelected = selectedFile === node.path;
+  const isAIModified = !node.isDirectory && isFileModified(node.path);
   
   return (
     <div>
@@ -137,9 +141,14 @@ function TreeNodeComponent({
             {getFileIcon(node.name)}
           </>
         )}
-        <span className="text-sm text-gray-900 dark:text-gray-100 truncate">
+        <span className="text-sm text-gray-900 dark:text-gray-100 truncate flex-1">
           {node.name}
         </span>
+        {isAIModified && (
+          <span title="Modified by AI">
+            <Sparkles className="w-3.5 h-3.5 text-emerald-500 animate-pulse" />
+          </span>
+        )}
       </div>
       
       {node.isDirectory && node.isExpanded && node.children && (

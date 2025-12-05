@@ -38,7 +38,7 @@ function getFileIcon(filename: string) {
     case 'ts':
     case 'jsx':
     case 'js':
-      return <FileCode className="w-4 h-4 text-blue-500" />;
+      return <FileCode className="w-4 h-4 text-emerald-500" />;
     case 'json':
       return <FileJson className="w-4 h-4 text-yellow-500" />;
     case 'md':
@@ -107,7 +107,7 @@ function TreeNodeComponent({
     <div>
       <div
         className={`flex items-center gap-2 px-2 py-1 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 ${
-          isSelected ? 'bg-blue-50 dark:bg-blue-900/20' : ''
+          isSelected ? 'bg-emerald-50 dark:bg-emerald-900/20' : ''
         }`}
         style={{ paddingLeft: `${level * 12 + 8}px` }}
         onClick={() => {
@@ -126,9 +126,9 @@ function TreeNodeComponent({
               <ChevronRight className="w-4 h-4 text-gray-500" />
             )}
             {node.isExpanded ? (
-              <FolderOpen className="w-4 h-4 text-blue-500" />
+              <FolderOpen className="w-4 h-4 text-emerald-500" />
             ) : (
-              <Folder className="w-4 h-4 text-blue-500" />
+              <Folder className="w-4 h-4 text-emerald-500" />
             )}
           </>
         ) : (
@@ -234,7 +234,7 @@ export default function FileTree({ webContainer, onFileSelect, selectedFile }: F
         </h3>
         <button
           onClick={loadFileTree}
-          className="text-xs text-emerald-600 dark:text-blue-400 hover:underline"
+          className="text-xs text-emerald-600 dark:text-emerald-400 hover:underline"
           disabled={isLoading}
         >
           {isLoading ? 'Loading...' : 'Refresh'}

@@ -83,8 +83,8 @@ export default function ResizablePane({
           direction === 'horizontal'
             ? 'w-1 cursor-col-resize hover:w-1.5'
             : 'h-1 cursor-row-resize hover:h-1.5'
-        } bg-gray-300 dark:bg-gray-700 hover:bg-blue-500 dark:hover:bg-emerald-600 transition-all ${
-          isDragging ? 'bg-blue-500 dark:bg-emerald-600' : ''
+        } bg-gray-300 dark:bg-gray-700 hover:bg-emerald-500 dark:hover:bg-emerald-600 transition-all ${
+          isDragging ? 'bg-emerald-500 dark:bg-emerald-600' : ''
         } flex-shrink-0 z-10`}
       />
 

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { SupabaseProvider } from "@/contexts/SupabaseContext";
+import { ThemeProvider } from "@/contexts/ThemeContext";
 import { ToastProvider } from "@/components/Toast";
 import "./globals.css";
 
@@ -16,11 +17,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="antialiased">
-        <ToastProvider>
-          <SupabaseProvider>
-            {children}
-          </SupabaseProvider>
-        </ToastProvider>
+        <ThemeProvider>
+          <ToastProvider>
+            <SupabaseProvider>
+              {children}
+            </SupabaseProvider>
+          </ToastProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

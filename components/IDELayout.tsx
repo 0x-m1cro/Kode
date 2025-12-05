@@ -17,6 +17,8 @@ import CodeEditor from './CodeEditor';
 import Terminal from './Terminal';
 import Preview from './Preview';
 import ResizablePane from './ResizablePane';
+import ThemeToggle from './ThemeToggle';
+import StatusBar from './StatusBar';
 
 export default function IDELayout() {
   const searchParams = useSearchParams();
@@ -229,6 +231,7 @@ export default function IDELayout() {
                 Supabase
               </div>
             )}
+            <ThemeToggle />
             <button
               onClick={() => router.push('/dashboard')}
               className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
@@ -325,6 +328,13 @@ export default function IDELayout() {
             </ResizablePane>
           </ResizablePane>
         </div>
+
+        {/* Status Bar */}
+        <StatusBar 
+          webContainer={webContainer}
+          isBooting={isBooting}
+          isMock={isMock}
+        />
 
         {/* Supabase Settings Modal */}
         <SupabaseSettings 

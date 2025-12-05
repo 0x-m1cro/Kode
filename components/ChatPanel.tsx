@@ -144,8 +144,8 @@ export default function ChatPanel({ webContainer }: ChatPanelProps) {
 
       {/* File Update Indicator */}
       {filesBeingUpdated.length > 0 && (
-        <div className="px-4 py-2 bg-blue-50 dark:bg-blue-900/20 border-t border-blue-200 dark:border-blue-800">
-          <div className="flex items-center gap-2 text-sm text-blue-700 dark:text-blue-300">
+        <div className="px-4 py-2 bg-emerald-50 dark:bg-emerald-900/20 border-t border-emerald-200 dark:border-emerald-800">
+          <div className="flex items-center gap-2 text-sm text-emerald-700 dark:text-emerald-300">
             <FileEdit className="w-4 h-4" />
             <span>Updating {filesBeingUpdated.length} file(s)...</span>
           </div>
@@ -161,12 +161,12 @@ export default function ChatPanel({ webContainer }: ChatPanelProps) {
             onChange={(e) => setInput(e.target.value)}
             placeholder={webContainer ? "Ask me anything..." : "Waiting for WebContainer..."}
             disabled={isLoading || !webContainer}
-            className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:bg-gray-800 dark:text-white disabled:opacity-50 disabled:cursor-not-allowed"
           />
           <button
             type="submit"
             disabled={isLoading || !input.trim() || !webContainer}
-            className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             {isLoading ? (
               <Loader2 className="w-5 h-5 animate-spin" />

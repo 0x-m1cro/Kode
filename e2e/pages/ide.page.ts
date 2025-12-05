@@ -138,9 +138,25 @@ export class IDEPage {
     // Wait a bit for messages to render
     await this.page.waitForTimeout(500);
     
-    // Look for message containers - adjust selector based on actual implementation
-    const messages = await this.page.locator('[class*="message"], [class*="chat"]').allTextContents();
-    return messages.filter(msg => msg.trim().length > 0);
+    // Look for message containers - matches ChatPanel.tsx structure
+    // Messages are in divs with either bg-blue-600 (user) or bg-gray-100 (assistant)
+    const messageContainers = this.page.locator('div.rounded-lg.px-4.py-2').filter({
+      has: this.page.locator('.whitespace-pre-wrap')
+    });
+    
+    // Get text content from each message
+    const count = await messageContainers.count();
+    const messages: string[] = [];
+    
+    for (let i = 0; i < count; i++) {
+      const contentDiv = messageContainers.nth(i).locator('.whitespace-pre-wrap');
+      const text = await contentDiv.textContent();
+      if (text && text.trim().length > 0) {
+        messages.push(text.trim());
+      }
+    }
+    
+    return messages;
   }
 
   /**

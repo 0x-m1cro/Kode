@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { Settings, Save, FolderOpen, Code, Monitor, Terminal as TerminalIcon, Clock, Github } from 'lucide-react';
+import { Settings, Save, FolderOpen, Code, Monitor, Terminal as TerminalIcon, Clock, Github, Rocket } from 'lucide-react';
 import type { WebContainer } from '@webcontainer/api';
 import { getWebContainer } from '@/lib/webcontainer';
 import { createMockWebContainer } from '@/lib/mock-webcontainer';
@@ -15,6 +15,7 @@ import { useToast } from './Toast';
 import ChatPanel from './ChatPanel';
 import SupabaseSettings from './SupabaseSettings';
 import GitHubSync from './GitHubSync';
+import DeploymentPanel from './DeploymentPanel';
 import FileTree from './FileTree';
 import CodeEditor from './CodeEditor';
 import Terminal from './Terminal';
@@ -42,6 +43,7 @@ export default function IDELayout() {
   const [autoSaveEnabled, setAutoSaveEnabled] = useState(true);
   const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null);
   const [isGitHubSyncOpen, setIsGitHubSyncOpen] = useState(false);
+  const [isDeploymentOpen, setIsDeploymentOpen] = useState(false);
   const { isConfigured } = useSupabase();
   const { isAuthenticated: isGitHubAuthenticated } = useGitHub();
   const { showToast } = useToast();
@@ -355,6 +357,13 @@ export default function IDELayout() {
               <Github className="w-4 h-4 text-gray-600 dark:text-gray-400" />
             </button>
             <button
+              onClick={() => setIsDeploymentOpen(true)}
+              className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+              title="Deploy"
+            >
+              <Rocket className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+            </button>
+            <button
               onClick={() => router.push('/dashboard')}
               className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
               title="My Projects"
@@ -463,6 +472,13 @@ export default function IDELayout() {
           webContainer={webContainer}
           isOpen={isGitHubSyncOpen}
           onClose={() => setIsGitHubSyncOpen(false)}
+        />
+
+        {/* Deployment Panel */}
+        <DeploymentPanel
+          webContainer={webContainer}
+          isOpen={isDeploymentOpen}
+          onClose={() => setIsDeploymentOpen(false)}
         />
 
         {/* Supabase Settings Modal */}

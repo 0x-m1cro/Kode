@@ -3,6 +3,7 @@ import { SupabaseProvider } from "@/contexts/SupabaseContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { AIModifiedFilesProvider } from "@/contexts/AIModifiedFilesContext";
 import { GitHubProvider } from "@/contexts/GitHubContext";
+import { DeploymentProvider } from "@/contexts/DeploymentContext";
 import { ToastProvider } from "@/components/Toast";
 import "./globals.css";
 
@@ -20,15 +21,17 @@ export default function RootLayout({
     <html lang="en">
       <body className="antialiased">
         <ThemeProvider>
-          <GitHubProvider>
-            <AIModifiedFilesProvider>
-              <ToastProvider>
-                <SupabaseProvider>
-                  {children}
-                </SupabaseProvider>
-              </ToastProvider>
-            </AIModifiedFilesProvider>
-          </GitHubProvider>
+          <DeploymentProvider>
+            <GitHubProvider>
+              <AIModifiedFilesProvider>
+                <ToastProvider>
+                  <SupabaseProvider>
+                    {children}
+                  </SupabaseProvider>
+                </ToastProvider>
+              </AIModifiedFilesProvider>
+            </GitHubProvider>
+          </DeploymentProvider>
         </ThemeProvider>
       </body>
     </html>

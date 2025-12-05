@@ -9,6 +9,7 @@ import { createMockWebContainer } from '@/lib/mock-webcontainer';
 import { useSupabase } from '@/contexts/SupabaseContext';
 import { serializeFileSystem, extractFilesFromTree, writeFilesToContainer } from '@/lib/filesystem';
 import { saveProject, loadProject } from '@/app/actions/persistence';
+import { useToast } from './Toast';
 import ChatPanel from './ChatPanel';
 import SupabaseSettings from './SupabaseSettings';
 import FileTree from './FileTree';
@@ -34,6 +35,7 @@ export default function IDELayout() {
   const [isMobile, setIsMobile] = useState(false);
   const [mobileView, setMobileView] = useState<'preview' | 'code' | 'chat'>('preview');
   const { isConfigured } = useSupabase();
+  const { showToast } = useToast();
 
   // Check for mobile on mount
   useEffect(() => {
@@ -145,7 +147,7 @@ export default function IDELayout() {
 
   const handleSaveProject = async () => {
     if (!webContainer) {
-      alert('WebContainer not ready');
+      showToast('WebContainer not ready', 'error');
       return;
     }
 
@@ -180,13 +182,13 @@ export default function IDELayout() {
           router.push(`/?id=${result.projectId}`);
         }
         
-        alert('Project saved successfully!');
+        showToast('Project saved successfully!', 'success');
       } else {
-        alert(result.error || 'Failed to save project');
+        showToast(result.error || 'Failed to save project', 'error');
       }
     } catch (error) {
       console.error('Error saving project:', error);
-      alert('An error occurred while saving the project');
+      showToast('An error occurred while saving the project', 'error');
     } finally {
       setIsSaving(false);
     }

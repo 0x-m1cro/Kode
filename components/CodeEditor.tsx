@@ -5,6 +5,7 @@ import Editor, { Monaco } from '@monaco-editor/react';
 import type { editor } from 'monaco-editor';
 import type { WebContainer } from '@webcontainer/api';
 import { Save, X } from 'lucide-react';
+import { useToast } from './Toast';
 
 interface CodeEditorProps {
   webContainer: WebContainer | null;
@@ -23,6 +24,7 @@ export default function CodeEditor({
   const [currentContent, setCurrentContent] = useState<string>('');
   const [isDirty, setIsDirty] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const { showToast } = useToast();
 
   useEffect(() => {
     if (content !== null) {
@@ -77,10 +79,11 @@ export default function CodeEditor({
       // Write file
       await webContainer.fs.writeFile(selectedFile, currentContent);
       setIsDirty(false);
+      showToast('File saved successfully', 'success');
       console.log(`Saved: ${selectedFile}`);
     } catch (error) {
       console.error('Error saving file:', error);
-      alert('Failed to save file');
+      showToast('Failed to save file', 'error');
     } finally {
       setIsSaving(false);
     }

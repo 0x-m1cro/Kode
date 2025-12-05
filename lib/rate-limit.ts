@@ -67,8 +67,6 @@ if (typeof window === 'undefined') {
     }
   }, 60000); // Clean up every minute
   
-  // Unref to allow process to exit
-  if (cleanupInterval.unref) {
-    cleanupInterval.unref();
-  }
+  // Unref to allow process to exit (Node.js only)
+  cleanupInterval.unref?.();
 }

@@ -132,7 +132,7 @@ export default function CodeEditor({
             {selectedFile.split('/').pop()}
           </span>
           {isDirty && (
-            <span className="w-2 h-2 rounded-full bg-blue-500" title="Unsaved changes" />
+            <span className="w-2 h-2 rounded-full bg-emerald-500" title="Unsaved changes" />
           )}
         </div>
         <div className="flex items-center gap-2">

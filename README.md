@@ -29,6 +29,13 @@ A production-ready clone of [Lovable.dev](https://lovable.dev) - an AI-powered d
 - **Error Handling**: Graceful error recovery and user-friendly error messages
 - **Supabase Integration**: Database persistence for projects and user data
 
+### UX Enhancements (Phase 2)
+- **Theme System**: Light/Dark/System mode with persistent preference
+- **Auto-Save**: Intelligent 30-second debounced auto-save with toggle
+- **Enhanced Status Bar**: Git branch, port, model, and system status indicators
+- **AI File Indicators**: Visual feedback showing which files were modified by AI
+- **Last Saved Indicator**: Real-time display of when project was last saved
+
 ## 🎯 What Makes This Special
 
 | Feature | MVP | Production (This) |
@@ -43,6 +50,10 @@ A production-ready clone of [Lovable.dev](https://lovable.dev) - an AI-powered d
 | Mobile Support | ❌ Desktop only | ✅ Responsive |
 | Toast Notifications | ❌ alert() | ✅ Custom Toasts |
 | Security Scan | ❌ Not Run | ✅ 0 Alerts |
+| Theme System | ❌ None | ✅ Light/Dark/System |
+| Auto-Save | ❌ Manual only | ✅ 30s Debounced |
+| AI Indicators | ❌ None | ✅ Visual Feedback |
+| Status Bar | ❌ Basic | ✅ Enhanced Info |
 | Documentation | ⚠️ Basic | ✅ Comprehensive |
 
 ## Tech Stack

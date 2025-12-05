@@ -1,22 +1,28 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { Settings, Save, FolderOpen, Code, Monitor, Terminal as TerminalIcon } from 'lucide-react';
+import { Settings, Save, FolderOpen, Code, Monitor, Terminal as TerminalIcon, Clock, Github, Rocket } from 'lucide-react';
 import type { WebContainer } from '@webcontainer/api';
 import { getWebContainer } from '@/lib/webcontainer';
 import { createMockWebContainer } from '@/lib/mock-webcontainer';
 import { useSupabase } from '@/contexts/SupabaseContext';
+import { useGitHub } from '@/contexts/GitHubContext';
 import { serializeFileSystem, extractFilesFromTree, writeFilesToContainer } from '@/lib/filesystem';
 import { saveProject, loadProject } from '@/app/actions/persistence';
+import { AutoSave } from '@/lib/auto-save';
 import { useToast } from './Toast';
 import ChatPanel from './ChatPanel';
 import SupabaseSettings from './SupabaseSettings';
+import GitHubSync from './GitHubSync';
+import DeploymentPanel from './DeploymentPanel';
 import FileTree from './FileTree';
 import CodeEditor from './CodeEditor';
 import Terminal from './Terminal';
 import Preview from './Preview';
 import ResizablePane from './ResizablePane';
+import ThemeToggle from './ThemeToggle';
+import StatusBar from './StatusBar';
 
 export default function IDELayout() {
   const searchParams = useSearchParams();
@@ -34,8 +40,14 @@ export default function IDELayout() {
   const [showTerminal, setShowTerminal] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
   const [mobileView, setMobileView] = useState<'preview' | 'code' | 'chat'>('preview');
+  const [autoSaveEnabled, setAutoSaveEnabled] = useState(true);
+  const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null);
+  const [isGitHubSyncOpen, setIsGitHubSyncOpen] = useState(false);
+  const [isDeploymentOpen, setIsDeploymentOpen] = useState(false);
   const { isConfigured } = useSupabase();
+  const { isAuthenticated: isGitHubAuthenticated } = useGitHub();
   const { showToast } = useToast();
+  const autoSaveRef = useRef<AutoSave | null>(null);
 
   // Check for mobile on mount
   useEffect(() => {
@@ -145,6 +157,45 @@ export default function IDELayout() {
     initWebContainer();
   }, [searchParams]);
 
+  const performSave = useCallback(async (silent: boolean = false) => {
+    if (!webContainer || !currentProjectId) {
+      return;
+    }
+
+    setIsSaving(true);
+    
+    try {
+      // Serialize the file system
+      const fs = await serializeFileSystem(webContainer);
+      const files = extractFilesFromTree(fs.root);
+      
+      // Save to database
+      const result = await saveProject({
+        projectId: currentProjectId,
+        projectName: currentProjectName,
+        files,
+      });
+
+      if (result.success) {
+        setLastSavedAt(new Date());
+        if (!silent) {
+          showToast('Project saved successfully!', 'success');
+        }
+      } else {
+        if (!silent) {
+          showToast(result.error || 'Failed to save project', 'error');
+        }
+      }
+    } catch (error) {
+      console.error('Error saving project:', error);
+      if (!silent) {
+        showToast('An error occurred while saving the project', 'error');
+      }
+    } finally {
+      setIsSaving(false);
+    }
+  }, [webContainer, currentProjectId, currentProjectName, showToast]);
+
   const handleSaveProject = async () => {
     if (!webContainer) {
       showToast('WebContainer not ready', 'error');
@@ -157,6 +208,7 @@ export default function IDELayout() {
       const name = prompt('Enter a name for your project:', projectName);
       if (!name) return; // User cancelled
       projectName = name;
+      setCurrentProjectName(projectName);
     }
 
     setIsSaving(true);
@@ -176,6 +228,7 @@ export default function IDELayout() {
       if (result.success) {
         setCurrentProjectId(result.projectId || currentProjectId);
         setCurrentProjectName(projectName);
+        setLastSavedAt(new Date());
         
         // Update URL if this is a new project
         if (!currentProjectId && result.projectId) {
@@ -194,6 +247,30 @@ export default function IDELayout() {
     }
   };
 
+  // Initialize auto-save
+  useEffect(() => {
+    if (!autoSaveRef.current) {
+      autoSaveRef.current = new AutoSave(async () => {
+        await performSave(true); // Silent save
+      }, 30000); // 30 seconds
+      
+      if (autoSaveEnabled) {
+        autoSaveRef.current.enable();
+      }
+    }
+
+    return () => {
+      autoSaveRef.current?.disable();
+    };
+  }, [performSave, autoSaveEnabled]);
+
+  // Trigger auto-save when project has an ID
+  useEffect(() => {
+    if (currentProjectId && autoSaveEnabled && autoSaveRef.current) {
+      autoSaveRef.current.trigger();
+    }
+  }, [currentProjectId, autoSaveEnabled]);
+
   const handleFileSelect = (path: string, content: string) => {
     setSelectedFile(path);
     setFileContent(content);
@@ -202,6 +279,31 @@ export default function IDELayout() {
   const handleFileClose = () => {
     setSelectedFile(null);
     setFileContent(null);
+  };
+
+  const toggleAutoSave = () => {
+    setAutoSaveEnabled(!autoSaveEnabled);
+    if (autoSaveRef.current) {
+      if (!autoSaveEnabled) {
+        autoSaveRef.current.enable();
+        showToast('Auto-save enabled', 'info');
+      } else {
+        autoSaveRef.current.disable();
+        showToast('Auto-save disabled', 'info');
+      }
+    }
+  };
+
+  const getLastSavedText = () => {
+    if (!lastSavedAt) return 'Never';
+    
+    const now = new Date();
+    const diff = Math.floor((now.getTime() - lastSavedAt.getTime()) / 1000);
+    
+    if (diff < 60) return 'Just now';
+    if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+    if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+    return `${Math.floor(diff / 86400)}d ago`;
   };
 
   // Desktop layout
@@ -214,9 +316,21 @@ export default function IDELayout() {
             Kode
           </h1>
           {currentProjectName && (
-            <span className="ml-4 text-sm text-gray-600 dark:text-gray-400">
-              {currentProjectName}
-            </span>
+            <div className="ml-4 flex items-center gap-3">
+              <span className="text-sm text-gray-600 dark:text-gray-400">
+                {currentProjectName}
+              </span>
+              {currentProjectId && (
+                <button
+                  onClick={toggleAutoSave}
+                  className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+                  title={autoSaveEnabled ? 'Auto-save enabled' : 'Auto-save disabled'}
+                >
+                  <Clock className={`w-3.5 h-3.5 ${autoSaveEnabled ? 'text-emerald-500' : ''}`} />
+                  <span>Saved {getLastSavedText()}</span>
+                </button>
+              )}
+            </div>
           )}
           <div className="ml-auto flex items-center gap-2">
             {isMock && (
@@ -229,6 +343,26 @@ export default function IDELayout() {
                 Supabase
               </div>
             )}
+            {isGitHubAuthenticated && (
+              <div className="px-3 py-1 rounded-full text-xs bg-gray-900 text-white dark:bg-gray-700">
+                GitHub
+              </div>
+            )}
+            <ThemeToggle />
+            <button
+              onClick={() => setIsGitHubSyncOpen(true)}
+              className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+              title="GitHub Sync"
+            >
+              <Github className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+            </button>
+            <button
+              onClick={() => setIsDeploymentOpen(true)}
+              className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+              title="Deploy"
+            >
+              <Rocket className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+            </button>
             <button
               onClick={() => router.push('/dashboard')}
               className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
@@ -325,6 +459,27 @@ export default function IDELayout() {
             </ResizablePane>
           </ResizablePane>
         </div>
+
+        {/* Status Bar */}
+        <StatusBar 
+          webContainer={webContainer}
+          isBooting={isBooting}
+          isMock={isMock}
+        />
+
+        {/* GitHub Sync Modal */}
+        <GitHubSync
+          webContainer={webContainer}
+          isOpen={isGitHubSyncOpen}
+          onClose={() => setIsGitHubSyncOpen(false)}
+        />
+
+        {/* Deployment Panel */}
+        <DeploymentPanel
+          webContainer={webContainer}
+          isOpen={isDeploymentOpen}
+          onClose={() => setIsDeploymentOpen(false)}
+        />
 
         {/* Supabase Settings Modal */}
         <SupabaseSettings 

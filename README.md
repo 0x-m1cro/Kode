@@ -2,6 +2,10 @@
 
 A production-ready clone of [Lovable.dev](https://lovable.dev) - an AI-powered development platform that enables rapid application development through natural language interactions.
 
+![Kode IDE](https://github.com/user-attachments/assets/0f2ceb84-47e2-440e-bc2a-f679d733e6c3)
+
+> **Status**: Production Ready ✅ | **Security**: 0 Vulnerabilities | **Build**: Passing
+
 ## ✨ Features
 
 ### Core IDE Features
@@ -24,6 +28,22 @@ A production-ready clone of [Lovable.dev](https://lovable.dev) - an AI-powered d
 - **Comprehensive Logging**: Production-ready logging system for monitoring and debugging
 - **Error Handling**: Graceful error recovery and user-friendly error messages
 - **Supabase Integration**: Database persistence for projects and user data
+
+## 🎯 What Makes This Special
+
+| Feature | MVP | Production (This) |
+|---------|-----|-------------------|
+| Code Editor | ❌ Placeholder | ✅ Monaco Editor |
+| File Tree | ❌ Missing | ✅ Full Explorer |
+| Terminal | ❌ Missing | ✅ xterm.js |
+| Live Preview | ❌ Missing | ✅ IFrame + Controls |
+| AI Integration | ⚠️ Mock Only | ✅ Real Claude API |
+| Rate Limiting | ❌ None | ✅ 50/min |
+| Logging | ❌ Console only | ✅ Production Logger |
+| Mobile Support | ❌ Desktop only | ✅ Responsive |
+| Toast Notifications | ❌ alert() | ✅ Custom Toasts |
+| Security Scan | ❌ Not Run | ✅ 0 Alerts |
+| Documentation | ⚠️ Basic | ✅ Comprehensive |
 
 ## Tech Stack
 

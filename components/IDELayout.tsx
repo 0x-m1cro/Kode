@@ -239,7 +239,7 @@ export default function IDELayout() {
             <button
               onClick={handleSaveProject}
               disabled={!webContainer || isSaving}
-              className="flex items-center gap-2 px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center gap-2 px-3 py-1.5 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               title="Save Project"
             >
               {isSaving ? (
@@ -348,7 +348,7 @@ export default function IDELayout() {
           <button
             onClick={handleSaveProject}
             disabled={!webContainer || isSaving}
-            className="p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
+            className="p-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors disabled:opacity-50"
           >
             <Save className="w-4 h-4" />
           </button>
@@ -391,7 +391,7 @@ export default function IDELayout() {
         <button
           onClick={() => setMobileView('preview')}
           className={`flex flex-col items-center gap-1 px-4 py-2 ${
-            mobileView === 'preview' ? 'text-blue-600' : 'text-gray-600 dark:text-gray-400'
+            mobileView === 'preview' ? 'text-emerald-600' : 'text-gray-600 dark:text-gray-400'
           }`}
         >
           <Monitor className="w-5 h-5" />
@@ -400,7 +400,7 @@ export default function IDELayout() {
         <button
           onClick={() => setMobileView('code')}
           className={`flex flex-col items-center gap-1 px-4 py-2 ${
-            mobileView === 'code' ? 'text-blue-600' : 'text-gray-600 dark:text-gray-400'
+            mobileView === 'code' ? 'text-emerald-600' : 'text-gray-600 dark:text-gray-400'
           }`}
         >
           <Code className="w-5 h-5" />
@@ -409,7 +409,7 @@ export default function IDELayout() {
         <button
           onClick={() => setMobileView('chat')}
           className={`flex flex-col items-center gap-1 px-4 py-2 ${
-            mobileView === 'chat' ? 'text-blue-600' : 'text-gray-600 dark:text-gray-400'
+            mobileView === 'chat' ? 'text-emerald-600' : 'text-gray-600 dark:text-gray-400'
           }`}
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -234,7 +234,7 @@ export default function FileTree({ webContainer, onFileSelect, selectedFile }: F
         </h3>
         <button
           onClick={loadFileTree}
-          className="text-xs text-blue-600 dark:text-blue-400 hover:underline"
+          className="text-xs text-emerald-600 dark:text-blue-400 hover:underline"
           disabled={isLoading}
         >
           {isLoading ? 'Loading...' : 'Refresh'}
